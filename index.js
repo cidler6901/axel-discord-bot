@@ -119,8 +119,10 @@ client.on("interactionCreate", async (interaction) => {
 /* -----------------------------
    ✅ LOGIN ONCE (VERY BOTTOM)
 ------------------------------*/
-console.log("TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
+console.log("ABOUT TO LOGIN TO DISCORD...");
 
 client.login(process.env.TOKEN)
-  .then(() => console.log("🔑 Discord login started..."))
-  .catch((err) => console.log("❌ Discord login failed:", err));
+  .then(() => console.log("✅ Logged into Discord!"))
+  .catch((err) => console.error("❌ Discord login failed:", err));
+
+console.log("past the login line of code");
