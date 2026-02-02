@@ -1,18 +1,38 @@
+// ------------------ IMPORTS ------------------
 import { Client, GatewayIntentBits } from "discord.js";
 import express from "express";
+import dotenv from "dotenv";
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+// ------------------ DOTENV ------------------
+dotenv.config();
 
-client.once("ready", () => {
-  console.log(`🤖 Bot online as ${client.user.tag}`);
+// ------------------ DISCORD CLIENT ------------------
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds]
 });
 
-client.login(process.env.bot_token)
-  .then(() => console.log("✅ Logged in"))
-  .catch(err => console.error("❌ Login failed:", err));
+// ------------------ READY EVENT ------------------
+client.once("ready", () => {
+  console.log(`🤖 Bot is ONLINE as ${client.user.tag}`);
+});
 
+// ------------------ LOGIN ------------------
+console.log("ABOUT TO LOGIN TO DISCORD...");
+client.login(process.env.bot_token)
+  .then(() => console.log("✅ Logged into Discord successfully!"))
+  .catch(err => console.error("❌ Discord login failed:", err));
+
+// ------------------ EXPRESS WEB SERVER ------------------
 const app = express();
-app.get("/", (req, res) => res.send("Bot is running!"));
-app.listen(process.env.PORT || 3000, () =>
-  console.log(`🌍 Web server running on port ${process.env.PORT || 3000}`)
-);
+
+app.get("/", (req, res) => {
+  res.send("Bot is running!");
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🌍 Web server running on port ${PORT}`);
+});
+
+// ------------------ OPTIONAL DEBUG ------------------
+console.log("TOKEN length:", process.env.bot_token?.length || "NOT FOUND");
