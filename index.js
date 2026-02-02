@@ -19,7 +19,7 @@ client.once("ready", () => {
 /* -----------------------------
    ✅ LOGIN
 ------------------------------*/
-client.login(process.env.TOKEN)
+client.login(process.env.bot_token)
   .then(() => console.log("✅ Logged into Discord successfully!"))
   .catch(err => console.error("❌ Discord login failed:", err));
 
