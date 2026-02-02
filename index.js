@@ -1,23 +1,10 @@
-const {
-  Client,
-  GatewayIntentBits,
-  PermissionsBitField,
-} = require("discord.js");
-
+const { Client, GatewayIntentBits } = require("discord.js");
 require("dotenv").config();
 const express = require("express");
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
-});
-console.log("1TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
-/* -----------------------------
-   ✅ PORT FIX FOR RENDER
-------------------------------*/
+// --------------------
+// WEB SERVER (Render Port Fix)
+// --------------------
 const app = express();
 
 app.get("/", (req, res) => {
@@ -29,35 +16,32 @@ app.listen(PORT, () => {
   console.log(`🌍 Web server running on port ${PORT}`);
 });
 
-/* -----------------------------
-   ✅ AUTO COMMAND UPDATE TOGGLE
-------------------------------*/
-if (process.env.UPDATE_COMMANDS === "true") {
-  console.log("🔄 Updating slash commands...");
+// --------------------
+// DISCORD CLIENT
+// --------------------
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
 
-  require("./deploy-commands.js");
-} else {
-  console.log("⚠️ Slash command update skipped.");
-}
+// --------------------
+// TOKEN CHECK
+// --------------------
+console.log("TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
 
-/* -----------------------------
-   ✅ BOT READY
-------------------------------*/
-console.log("2TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
-
-client.login(process.env.TOKEN)
-  .then(() => console.log("🔑 Discord login successful!middle"))
-  .catch((err) => console.log("❌ Discord login failed middle :", err));
-
-
+// --------------------
+// READY EVENT
+// --------------------
 client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
-/* -----------------------------
-   ✅ ANTI-SPAM SYSTEM
-------------------------------*/
-
+// --------------------
+// ANTI-SPAM SYSTEM
+// --------------------
 const spamTracker = new Map();
 
 client.on("messageCreate", async (message) => {
@@ -66,7 +50,6 @@ client.on("messageCreate", async (message) => {
   const userId = message.author.id;
   const content = message.content;
 
-  // Create tracker if none exists
   if (!spamTracker.has(userId)) {
     spamTracker.set(userId, {
       lastMessage: "",
@@ -86,34 +69,34 @@ client.on("messageCreate", async (message) => {
     data.count++;
   }
 
-  // Reset count after 30 seconds
+  // Reset after 30 seconds
   if (Date.now() - data.time > 30000) {
     data.count = 1;
     data.time = Date.now();
   }
 
-  // If user repeats same message 10 times
+  // 10 same messages = spam
   if (data.count >= 10) {
     data.count = 0;
 
     // DM warning
     try {
       await message.author.send(
-        "🛑 Stop spamming or you're going to get personally diddled 😤"
+        "🛑 Stop spamming or you're going to be timed out for 10 minutes 😤"
       );
     } catch (err) {
       console.log("Could not DM user.");
     }
 
-    // Timeout user for 10 minutes (requires permissions)
-    if (message.member.moderatable) {
+    // Timeout user
+    if (message.member?.moderatable) {
       try {
         await message.member.timeout(
           10 * 60 * 1000,
           "Spamming same message 10 times"
         );
 
-        message.channel.send(
+        await message.channel.send(
           `⏳ ${message.author} has been timed out for spamming.`
         );
       } catch (err) {
@@ -123,22 +106,26 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-/* -----------------------------
-   ✅ SLASH COMMANDS
-------------------------------*/
+// --------------------
+// SLASH COMMANDS
+// --------------------
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "ping") {
-    await interaction.reply("🏓 Pong!");
+    return interaction.reply("🏓 Pong!");
   }
 
   if (interaction.commandName === "hello") {
-    await interaction.reply("Hello! 👋");
+    return interaction.reply("Hello! 👋");
   }
 });
-console.log("3TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
+
+// --------------------
+// LOGIN (ONLY ONCE)
+// --------------------
+console.log("ABOUT TO LOGIN TO DISCORD...");
 
 client.login(process.env.TOKEN)
-  .then(() => console.log("🔑 Discord login successful! bottom"))
-  .catch((err) => console.log("❌ Discord login failed bottom:", err));
+  .then(() => console.log("🔑 Discord login successful!"))
+  .catch((err) => console.log("❌ Discord login failed:", err));
