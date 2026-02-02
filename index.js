@@ -92,7 +92,7 @@ client.on("messageCreate", async (message) => {
     // DM warning
     try {
       await message.author.send(
-        "🛑 Stop spamming or you're going to get slapped for 10 minutes 😤"
+        "🛑 Stop spamming or you're going to get personally diddled 😤"
       );
     } catch (err) {
       console.log("Could not DM user.");
