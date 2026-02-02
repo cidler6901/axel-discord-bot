@@ -125,4 +125,9 @@ client.login(process.env.TOKEN)
   .then(() => console.log("✅ Logged into Discord!"))
   .catch((err) => console.error("❌ Discord login failed:", err));
 
+client.once("ready", () => {
+  console.log(`🤖 Bot is online as ${client.user.tag}`);
+});
+
+
 console.log("past the login line of code");
