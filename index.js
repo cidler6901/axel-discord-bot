@@ -14,7 +14,7 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 });
-
+console.log("TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
 /* -----------------------------
    ✅ PORT FIX FOR RENDER
 ------------------------------*/
@@ -131,9 +131,6 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-client.login(process.env.TOKEN);
-
 client.login(process.env.TOKEN)
-  .then(() => console.log("🔑 Bot login successful!"))
-  .catch((err) => console.log("❌ Bot login failed:", err));
-
+  .then(() => console.log("🔑 Discord login successful!"))
+  .catch((err) => console.log("❌ Discord login failed:", err));
