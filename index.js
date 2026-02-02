@@ -2,9 +2,20 @@ const { Client, GatewayIntentBits } = require("discord.js");
 require("dotenv").config();
 const express = require("express");
 
-// --------------------
-// WEB SERVER (Render Port Fix)
-// --------------------
+/* -----------------------------
+   ✅ DISCORD CLIENT
+------------------------------*/
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
+
+/* -----------------------------
+   ✅ WEB SERVER (RENDER PORT FIX)
+------------------------------*/
 const app = express();
 
 app.get("/", (req, res) => {
@@ -16,32 +27,16 @@ app.listen(PORT, () => {
   console.log(`🌍 Web server running on port ${PORT}`);
 });
 
-// --------------------
-// DISCORD CLIENT
-// --------------------
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
-});
-
-// --------------------
-// TOKEN CHECK
-// --------------------
-console.log("TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
-
-// --------------------
-// READY EVENT
-// --------------------
+/* -----------------------------
+   ✅ READY EVENT
+------------------------------*/
 client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
-// --------------------
-// ANTI-SPAM SYSTEM
-// --------------------
+/* -----------------------------
+   ✅ ANTI-SPAM SYSTEM
+------------------------------*/
 const spamTracker = new Map();
 
 client.on("messageCreate", async (message) => {
@@ -75,28 +70,28 @@ client.on("messageCreate", async (message) => {
     data.time = Date.now();
   }
 
-  // 10 same messages = spam
+  // Spam detected (10 repeats)
   if (data.count >= 10) {
     data.count = 0;
 
     // DM warning
     try {
       await message.author.send(
-        "🛑 Stop spamming or you're going to be timed out for 10 minutes 😤"
+        "🛑 Stop spamming or you will be timed out for 10 minutes."
       );
-    } catch (err) {
+    } catch {
       console.log("Could not DM user.");
     }
 
     // Timeout user
-    if (message.member?.moderatable) {
+    if (message.member.moderatable) {
       try {
         await message.member.timeout(
           10 * 60 * 1000,
           "Spamming same message 10 times"
         );
 
-        await message.channel.send(
+        message.channel.send(
           `⏳ ${message.author} has been timed out for spamming.`
         );
       } catch (err) {
@@ -106,26 +101,26 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-// --------------------
-// SLASH COMMANDS
-// --------------------
+/* -----------------------------
+   ✅ SLASH COMMANDS
+------------------------------*/
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "ping") {
-    return interaction.reply("🏓 Pong!");
+    await interaction.reply("🏓 Pong!");
   }
 
   if (interaction.commandName === "hello") {
-    return interaction.reply("Hello! 👋");
+    await interaction.reply("Hello! 👋");
   }
 });
 
-// --------------------
-// LOGIN (ONLY ONCE)
-// --------------------
-console.log("ABOUT TO LOGIN TO DISCORD...");
+/* -----------------------------
+   ✅ LOGIN ONCE (VERY BOTTOM)
+------------------------------*/
+console.log("TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
 
 client.login(process.env.TOKEN)
-  .then(() => console.log("🔑 Discord login successful!"))
+  .then(() => console.log("🔑 Discord login started..."))
   .catch((err) => console.log("❌ Discord login failed:", err));
