@@ -1,39 +1,18 @@
-const { Client, GatewayIntentBits } = require("discord.js");
-const express = require("express");
+import { Client, GatewayIntentBits } from "discord.js";
+import express from "express";
 
-/* -----------------------------
-   ✅ DISCORD CLIENT
-------------------------------*/
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-console.log("ABOUT TO LOGIN TO DISCORD...");
-
-/* -----------------------------
-   ✅ LOGIN
-------------------------------*/
-client.login(process.env.bot_token)
-  .then(() => console.log("✅ Logged into Discord successfully!"))
-  .catch(err => console.error("❌ Discord login failed:", err));
-
-/* -----------------------------
-   ✅ READY EVENT
-------------------------------*/
 client.once("ready", () => {
-  console.log(`🤖 Bot is ONLINE as ${client.user.tag}`);
+  console.log(`🤖 Bot online as ${client.user.tag}`);
 });
 
-/* -----------------------------
-   ✅ WEB SERVER (RENDER PORT)
-------------------------------*/
+client.login(process.env.bot_token)
+  .then(() => console.log("✅ Logged in"))
+  .catch(err => console.error("❌ Login failed:", err));
+
 const app = express();
-
-app.get("/", (req, res) => {
-  res.send("Bot is running!");
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🌍 Web server running on port ${PORT}`);
-});
-
-console.log("bot_token length:", process.env.bot_token?.length || "NOT FOUND");
+app.get("/", (req, res) => res.send("Bot is running!"));
+app.listen(process.env.PORT || 3000, () =>
+  console.log(`🌍 Web server running on port ${process.env.PORT || 3000}`)
+);
