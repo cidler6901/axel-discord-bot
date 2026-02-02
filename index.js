@@ -14,7 +14,7 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 });
-console.log("TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
+console.log("1TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
 /* -----------------------------
    ✅ PORT FIX FOR RENDER
 ------------------------------*/
@@ -43,6 +43,13 @@ if (process.env.UPDATE_COMMANDS === "true") {
 /* -----------------------------
    ✅ BOT READY
 ------------------------------*/
+console.log("2TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
+
+client.login(process.env.TOKEN)
+  .then(() => console.log("🔑 Discord login successful!middle"))
+  .catch((err) => console.log("❌ Discord login failed middle :", err));
+
+
 client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
@@ -130,7 +137,8 @@ client.on("interactionCreate", async (interaction) => {
     await interaction.reply("Hello! 👋");
   }
 });
+console.log("3TOKEN FOUND?", process.env.TOKEN ? "YES" : "NO");
 
 client.login(process.env.TOKEN)
-  .then(() => console.log("🔑 Discord login successful!"))
-  .catch((err) => console.log("❌ Discord login failed:", err));
+  .then(() => console.log("🔑 Discord login successful! bottom"))
+  .catch((err) => console.log("❌ Discord login failed bottom:", err));
