@@ -133,3 +133,7 @@ client.on("interactionCreate", async (interaction) => {
 
 client.login(process.env.TOKEN);
 
+client.login(process.env.TOKEN)
+  .then(() => console.log("🔑 Bot login successful!"))
+  .catch((err) => console.log("❌ Bot login failed:", err));
+
