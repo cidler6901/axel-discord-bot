@@ -15,6 +15,9 @@ if (!token) {
 } else {
     const tokenSource = process.env.DISCORD_TOKEN ? 'DISCORD_TOKEN' : process.env.BOT_TOKEN ? 'BOT_TOKEN' : 'TOKEN';
     console.log(`Using ${tokenSource} for Discord authentication.`);
+if (!process.env.DISCORD_TOKEN) {
+    console.error('Missing DISCORD_TOKEN in environment. Create a .env file or set it in your host settings.');
+    process.exit(1);
 }
 
 const client = new Client({
@@ -49,6 +52,7 @@ client.on('shardDisconnect', (event, shardId) => {
     const eventCode = event && 'code' in event ? event.code : undefined;
     const eventReason = event && 'reason' in event ? event.reason : undefined;
     console.warn(`Discord shard ${shardId} disconnected:`, eventCode, eventReason);
+    console.warn(`Discord shard ${shardId} disconnected:`, event?.code, event?.reason);
 });
 
 client.on('interactionCreate', async interaction => {
@@ -64,6 +68,7 @@ client.on('interactionCreate', async interaction => {
 });
 
 client.login(token).catch(error => {
+client.login(process.env.DISCORD_TOKEN).catch(error => {
     console.error('Failed to log in to Discord. Check your token and bot configuration.', error);
     process.exit(1);
 });
