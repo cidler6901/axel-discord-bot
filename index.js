@@ -28,6 +28,14 @@ client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
 
+process.on('unhandledRejection', error => {
+    console.error('Unhandled promise rejection:', error);
+});
+
+process.on('uncaughtException', error => {
+    console.error('Uncaught exception:', error);
+});
+
 client.on('warn', info => {
     console.warn('Discord client warning:', info);
 });
@@ -41,6 +49,9 @@ client.on('shardError', error => {
 });
 
 client.on('shardDisconnect', (event, shardId) => {
+    const eventCode = event && 'code' in event ? event.code : undefined;
+    const eventReason = event && 'reason' in event ? event.reason : undefined;
+    console.warn(`Discord shard ${shardId} disconnected:`, eventCode, eventReason);
     console.warn(`Discord shard ${shardId} disconnected:`, event?.code, event?.reason);
 });
 
