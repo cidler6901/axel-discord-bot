@@ -4,6 +4,11 @@ const express = require('express'); // tiny web server
 const app = express();
 
 // ---- Discord Bot ----
+if (!process.env.DISCORD_TOKEN) {
+    console.error('Missing DISCORD_TOKEN in environment. Create a .env file or set it in your host settings.');
+    process.exit(1);
+}
+
 const client = new Client({
     intents: [GatewayIntentBits.Guilds]
 });
@@ -24,7 +29,10 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN).catch(error => {
+    console.error('Failed to log in to Discord. Check your token and bot configuration.', error);
+    process.exit(1);
+});
 
 // ---- Web server for Render ----
 const PORT = process.env.PORT || 3000;
