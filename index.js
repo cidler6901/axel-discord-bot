@@ -4,12 +4,51 @@ const express = require('express'); // tiny web server
 const app = express();
 
 // ---- Discord Bot ----
+const token =
+    process.env.DISCORD_TOKEN ||
+    process.env.BOT_TOKEN ||
+    process.env.TOKEN;
+
+if (!token) {
+    console.error('Missing DISCORD_TOKEN/BOT_TOKEN/TOKEN in environment. Create a .env file or set it in your host settings.');
+    process.exit(1);
+} else {
+    const tokenSource = process.env.DISCORD_TOKEN ? 'DISCORD_TOKEN' : process.env.BOT_TOKEN ? 'BOT_TOKEN' : 'TOKEN';
+    console.log(`Using ${tokenSource} for Discord authentication.`);
+}
+
 const client = new Client({
     intents: [GatewayIntentBits.Guilds]
 });
 
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}`);
+});
+
+process.on('unhandledRejection', error => {
+    console.error('Unhandled promise rejection:', error);
+});
+
+process.on('uncaughtException', error => {
+    console.error('Uncaught exception:', error);
+});
+
+client.on('warn', info => {
+    console.warn('Discord client warning:', info);
+});
+
+client.on('error', error => {
+    console.error('Discord client error:', error);
+});
+
+client.on('shardError', error => {
+    console.error('Discord shard error:', error);
+});
+
+client.on('shardDisconnect', (event, shardId) => {
+    const eventCode = event && 'code' in event ? event.code : undefined;
+    const eventReason = event && 'reason' in event ? event.reason : undefined;
+    console.warn(`Discord shard ${shardId} disconnected:`, eventCode, eventReason);
 });
 
 client.on('interactionCreate', async interaction => {
@@ -24,7 +63,10 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(token).catch(error => {
+    console.error('Failed to log in to Discord. Check your token and bot configuration.', error);
+    process.exit(1);
+});
 
 // ---- Web server for Render ----
 const PORT = process.env.PORT || 3000;
